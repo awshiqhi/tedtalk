@@ -3,7 +3,7 @@
 A RESTful API for managing and analyzing TED Talk data with CSV import functionality.
 
 ## 📂 Project Structure
-
+```
 src/
 ├── main/
 │ ├── java/com/io/tedtalk/
@@ -21,6 +21,7 @@ src/
 ├── controller/
 ├── repository/
 └── service/
+```
 
 
 ## 🚀 Features
@@ -35,7 +36,7 @@ src/
   - Search by title (contains, case-insensitive)
   - Search by author (contains, case-insensitive)
 - **Analytics**:
-  - Get most influential speakers (by views + likes)
+  - Get most influential speakers (ranked internally using views and likes)
   - Get most influential talks per year
 - **Statistics Update**:
   - Patch operation to update views/likes
@@ -43,10 +44,12 @@ src/
 ### CSV Import
 - Bulk import TED Talks from CSV
 - Comprehensive validation:
+  - Only accepts csv files
   - Date format validation (MMMM yyyy)
   - URL format validation
   - Duplicate prevention (both in DB and within CSV)
   - Data type validation (views/likes must be integers)
+  - Columns cannot be empty
 
 ## 🔧 Technical Decisions
 
@@ -60,12 +63,21 @@ src/
 3. **Validation**:
    - Comprehensive validation at both controller and service layers
    - Custom error responses for invalid data
+   - Assuming link will be unique for a ted talk
 
 4. **CSV Import**:
    - Atomic operation - either all valid rows are imported or none
    - Detailed import report with success/failure counts
 
+5. **Test Coverage**:
+   - Enough test coverage added to validate different uses cases and units
+  
 ## 💻 API Documentation
+
+### Swagger
+You can use below swagger URL to access the endpoints
+
+- http://localhost:8080/swagger-ui/index.html
 
 ### Base URL
 `https://your-api-url.com/api/tedtalks`
@@ -102,17 +114,17 @@ src/
 ## 📝 CSV Format
 
 Required CSV header (exact match): title,author,date,views,likes,link
+Number of columns should match the header
 
 
 ## 🛠️ Setup & Installation
 
-1. **Prerequisites**:
+1. **Development Environment**:
    - Java 21
    - Maven 3.8+
-   
+   - Spring Boot 3.4.5
 
-2. **Configuration**:
-## Database Configuration
+2. **Configuration**: Database Configuration
 
 The application uses an embedded H2 database with the following configuration:
 
@@ -146,9 +158,11 @@ For production environments, consider switching to a more robust database like P
 
 Build, Run and Test
 
+'''
 mvn clean install
 mvn spring-boot:run
 mvn test
+'''
 
 Sample Requests
 
@@ -156,12 +170,12 @@ Create Ted Talk
 curl -X POST "http://localhost:8080/api/tedtalks" \
 -H "Content-Type: application/json" \
 -d '{
-    "title": "Your body language may shape who you are",
-    "author": "Amy Cuddy",
+    "title": "Ted Talk by John M on API development",
+    "author": "John Mike",
     "date": "October 2012",
     "views": 45000000,
     "likes": 2200000,
-    "link": "https://example.com/amycuddy"
+    "link": "https://example.com/johnmike-article-1"
 }'
 
 Import CSV
@@ -170,4 +184,10 @@ curl -X POST "http://localhost:8080/api/import/csv" \
 -H "Content-Type: multipart/form-data" \
 -F "file=@talks.csv"
 
+
+## Assumptions
+- Security/authentication not in scope
+- CSV must be properly formatted
+- Performance optimizations can be addressed later
+- Better database can be chosen later
 
